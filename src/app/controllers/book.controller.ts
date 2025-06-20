@@ -61,3 +61,44 @@ bookRoutes.get('/:bookId', async (req: Request, res: Response) => {
         });
     }
 })
+
+bookRoutes.put('/:bookId', async (req: Request, res: Response) => {
+    try {
+        const bookId = req.params.bookId
+        const updatedBook = req.body;
+        const data = await Book.findByIdAndUpdate(bookId, updatedBook, { new: true, })
+
+        res.status(201).json({
+            success: true,
+            message: "Book updated successfully",
+            data
+        })
+    } catch (error) {
+        res.status(400).json({
+            message: "Validation failed",
+            success: false,
+            error,
+        });
+    }
+})
+
+bookRoutes.delete('/:bookId', async (req: Request, res: Response) => {
+    try {
+        const bookId = req.params.bookId;
+        const data = await Book.findByIdAndDelete(bookId);
+
+        res.status(201).json({
+            success: true,
+            message: "Book Deleted successfully",
+            data: null
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: "Validation failed",
+            success: false,
+            error,
+        });
+    }
+})
+
+
