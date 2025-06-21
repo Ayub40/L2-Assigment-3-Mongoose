@@ -1,3 +1,4 @@
+import { Model, Types } from "mongoose";
 
 
 export interface IBook {
@@ -9,3 +10,11 @@ export interface IBook {
     copies: number,
     available: boolean,
 }
+
+export interface UserStaticMethod extends Model<IBook> {
+    updateAvailability(bookId: Types.ObjectId): void;
+}
+
+
+
+

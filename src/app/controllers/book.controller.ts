@@ -26,7 +26,7 @@ bookRoutes.post('/', async (req: Request, res: Response) => {
 
 bookRoutes.get('/', async (req: Request, res: Response) => {
     try {
-        // const notes = await Book.find().populate('book')
+        // const data = await Book.find().populate('book')
         const data = await Book.find()
 
         res.status(201).json({

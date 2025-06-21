@@ -11,9 +11,6 @@ app.use(express.json())
 app.use('/api/books', bookRoutes);
 // app.use('/api/borrow', borrowRoutes);
 
-// app.use("/data", bookRoutes)
-// app.use("/notes", notesRoutes);
-
 app.get('/', (req: Request, res: Response) => {
     res.send('Welcome to Library Management System');
 });
