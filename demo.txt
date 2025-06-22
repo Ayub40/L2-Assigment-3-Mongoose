@@ -5,3 +5,18 @@ Get By Id: http://localhost:4000/api/books/6855c41832958681f5a785f7
 Update By Id: http://localhost:4000/api/books/6855bdced44719c883e42b42  
 Delete By Id: http://localhost:4000/api/books/6855bdced44719c883e42b42
 
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "",
+            "use": ""
+        }
+    ],
+    "routes": [
+        {
+            "src": "",
+            "dest": ""
+        }
+    ]
+}
