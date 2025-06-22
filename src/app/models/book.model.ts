@@ -33,7 +33,7 @@ const bookSchema = new Schema<IBook>({
     copies: {
         type: Number,
         required: true,
-        min: [0, "Copies must be a"]
+        min: [0, "Copies must be a positive number"]
     },
     available: {
         type: Boolean,
@@ -66,7 +66,11 @@ bookSchema.static("updateAvailability", async function (bookId: Types.ObjectId) 
     }
 });
 
-
+bookSchema.post("findOneAndUpdate", async function (doc, next) {
+    doc.available = doc.copies > 0;
+    await doc.save();
+    next();
+});
 
 
 export const Book = model<IBook, UserStaticMethod>("Book", bookSchema)
