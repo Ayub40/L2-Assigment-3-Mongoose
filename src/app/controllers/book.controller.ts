@@ -15,7 +15,7 @@ bookRoutes.post('/', async (req: Request, res: Response) => {
         })
     } catch (error: any) {
         res.status(400).json({
-            message: error.message || "Validation failed",
+            message: "Validation failed",
             success: false,
             error
         });
