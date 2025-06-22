@@ -113,8 +113,8 @@ src/
 │   │   ├── book.interface.ts
 │   │   ├── borrowBook.interface.ts
 │   ├── models/
-│   │   ├── book.model.ts
-│   │   ├── borrowBook.model.ts
+│       ├── book.model.ts
+│       ├── borrowBook.model.ts
 │  
 │── app.ts
 │── server.ts
