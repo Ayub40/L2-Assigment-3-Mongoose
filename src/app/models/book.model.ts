@@ -46,18 +46,26 @@ const bookSchema = new Schema<IBook>({
     }
 )
 
-bookSchema.static(
-    "updateAvailability",
-    async function (bookId: Types.ObjectId) {
-        const book = await this.findById(bookId);
-        if (book) {
-            book.available = book.copies > 0;
-            await book.save();
-        } else {
+bookSchema.static("updateAvailability", async function (bookId: Types.ObjectId) {
+    try {
+        const updatedBook = await this.findByIdAndUpdate(
+            bookId,
+            {
+                $set: {
+                    available: (await this.findById(bookId)).copies > 0,
+                },
+            },
+            { new: true }
+        );
+
+        if (!updatedBook) {
             console.warn(`Book with ID ${bookId} not found for availability update.`);
         }
+    } catch (error) {
+        console.error(`Error updating availability for Book ID ${bookId}:`, error);
     }
-);
+});
+
 
 
 

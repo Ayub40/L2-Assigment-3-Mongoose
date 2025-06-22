@@ -37,11 +37,19 @@ exports.bookRoutes.post('/', (req, res) => __awaiter(void 0, void 0, void 0, fun
 exports.bookRoutes.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // const data = await Book.find().populate('book')
-        const data = yield book_model_1.Book.find();
-        res.status(201).json({
+        // const data = await Book.find()
+        const filter = req.query.filter;
+        const sortBy = req.query.sortBy || "createdAt";
+        const sortOrder = req.query.sort || "dsc";
+        const limit = parseInt(req.query.limit, 10) || 10;
+        const condition = filter ? { genre: filter } : {};
+        const books = yield book_model_1.Book.find(condition)
+            .sort({ [sortBy]: sortOrder === "asc" ? 1 : -1 })
+            .limit(limit);
+        res.status(200).json({
             success: true,
             message: "Books retrieved successfully",
-            data
+            data: books
         });
     }
     catch (error) {
