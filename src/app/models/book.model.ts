@@ -1,7 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 import { IBook, UserStaticMethod } from "../interfaces/book.interface";
 
-
 const bookSchema = new Schema<IBook>({
     title: {
         type: String,
@@ -47,24 +46,32 @@ const bookSchema = new Schema<IBook>({
 )
 
 bookSchema.static("updateAvailability", async function (bookId: Types.ObjectId) {
-    try {
-        const updatedBook = await this.findByIdAndUpdate(
-            bookId,
-            {
-                $set: {
-                    available: (await this.findById(bookId)).copies > 0,
-                },
-            },
-            { new: true }
-        );
-
-        if (!updatedBook) {
-            console.warn(`Book with ID ${bookId} not found for availability update.`);
-        }
-    } catch (error) {
-        console.error(`Error updating availability for Book ID ${bookId}:`, error);
+    const book = await this.findById(bookId);
+    if (book) {
+        const available = book.copies > 0;
+        await this.findByIdAndUpdate(bookId, { $set: { available } });
     }
 });
+
+// bookSchema.static("updateAvailability", async function (bookId: Types.ObjectId) {
+//     try {
+//         const updatedBook = await this.findByIdAndUpdate(
+//             bookId,
+//             {
+//                 $set: {
+//                     available: (await this.findById(bookId)).copies > 0,
+//                 },
+//             },
+//             { new: true }
+//         );
+
+//         if (!updatedBook) {
+//             console.warn(`Book with ID ${bookId} not found for availability update.`);
+//         }
+//     } catch (error) {
+//         console.error(`Error updating availability for Book ID ${bookId}:`, error);
+//     }
+// });
 
 bookSchema.post("findOneAndUpdate", async function (doc, next) {
     doc.available = doc.copies > 0;
