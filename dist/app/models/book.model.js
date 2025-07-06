@@ -42,7 +42,7 @@ const bookSchema = new mongoose_1.Schema({
     copies: {
         type: Number,
         required: true,
-        min: [0, "Copies must be a"]
+        min: [0, "Copies must be a positive number"]
     },
     available: {
         type: Boolean,
@@ -52,16 +52,35 @@ const bookSchema = new mongoose_1.Schema({
     versionKey: false,
     timestamps: true
 });
+// bookSchema.static("updateAvailability", async function (bookId: Types.ObjectId) {
+//     const book = await this.findById(bookId);
+//     if (book) {
+//         const available = book.copies > 0;
+//         await this.findByIdAndUpdate(bookId, { $set: { available } });
+//     }
+// });
 bookSchema.static("updateAvailability", function (bookId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const book = yield this.findById(bookId);
-        if (book) {
-            book.available = book.copies > 0;
-            yield book.save();
+        try {
+            const updatedBook = yield this.findByIdAndUpdate(bookId, {
+                $set: {
+                    available: (yield this.findById(bookId)).copies > 0,
+                },
+            }, { new: true });
+            if (!updatedBook) {
+                console.warn(`Book with ID ${bookId} not found for availability update.`);
+            }
         }
-        else {
-            console.warn(`Book with ID ${bookId} not found for availability update.`);
+        catch (error) {
+            console.error(`Error updating availability for Book ID ${bookId}:`, error);
         }
+    });
+});
+bookSchema.post("findOneAndUpdate", function (doc, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        doc.available = doc.copies > 0;
+        yield doc.save();
+        next();
     });
 });
 exports.Book = (0, mongoose_1.model)("Book", bookSchema);

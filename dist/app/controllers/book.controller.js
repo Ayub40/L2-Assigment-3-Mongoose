@@ -15,11 +15,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.bookRoutes = void 0;
 const express_1 = __importDefault(require("express"));
 const book_model_1 = require("../models/book.model");
+const mongoose_1 = require("mongoose");
 exports.bookRoutes = express_1.default.Router();
 exports.bookRoutes.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const body = req.body;
+        // client theke available asle remove kora hobe 
+        if ('available' in body) {
+            delete body.available;
+        }
         const data = yield book_model_1.Book.create(body);
+        // new change
+        yield book_model_1.Book.updateAvailability(data._id);
         res.status(201).json({
             success: true,
             message: "Book created successfully",
@@ -28,7 +35,7 @@ exports.bookRoutes.post('/', (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
     catch (error) {
         res.status(400).json({
-            message: error.message || "Validation failed",
+            message: "Validation failed",
             success: false,
             error
         });
@@ -41,15 +48,29 @@ exports.bookRoutes.get('/', (req, res) => __awaiter(void 0, void 0, void 0, func
         const filter = req.query.filter;
         const sortBy = req.query.sortBy || "createdAt";
         const sortOrder = req.query.sort || "dsc";
+        // Pagination (page line er last er 1 thik thkbe)
+        const page = parseInt(req.query.page, 10) || 1;
         const limit = parseInt(req.query.limit, 10) || 10;
+        // Pagination
+        const skip = (page - 1) * limit;
         const condition = filter ? { genre: filter } : {};
+        // Pagination
+        const total = yield book_model_1.Book.countDocuments(condition);
         const books = yield book_model_1.Book.find(condition)
             .sort({ [sortBy]: sortOrder === "asc" ? 1 : -1 })
+            .skip(skip)
             .limit(limit);
         res.status(200).json({
             success: true,
             message: "Books retrieved successfully",
-            data: books
+            data: books,
+            // Pagination
+            meta: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+            }
         });
     }
     catch (error) {
@@ -82,7 +103,12 @@ exports.bookRoutes.put('/:bookId', (req, res) => __awaiter(void 0, void 0, void 
     try {
         const bookId = req.params.bookId;
         const updatedBook = req.body;
+        // client theke available asle remove kora hobe 
+        if ('available' in updatedBook) {
+            delete updatedBook.available;
+        }
         const data = yield book_model_1.Book.findByIdAndUpdate(bookId, updatedBook, { new: true, });
+        yield book_model_1.Book.updateAvailability(new mongoose_1.Types.ObjectId(bookId));
         res.status(201).json({
             success: true,
             message: "Book updated successfully",
