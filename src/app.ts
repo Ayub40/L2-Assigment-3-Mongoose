@@ -6,7 +6,7 @@ import cors from 'cors';
 const app: Application = express();
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://library-management-system-liart-chi.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
 }))
